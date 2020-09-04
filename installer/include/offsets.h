@@ -32,6 +32,7 @@
 
 // sdk version spoof - enable all VR fws
 #define sdk_version_patch               0x1A84248
+#define fake_dex_patch                  0x1BD800D
 
 // enable debug log
 #define enable_debug_log_patch          0x0123367
