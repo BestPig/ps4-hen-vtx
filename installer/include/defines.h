@@ -2,7 +2,7 @@
 #define __DEFINES_H__
 #pragma once
 
-#define VERSION "2.1.3"
+#define VERSION "2.1.3b"
 
 //#define DEBUG_SOCKET
 
@@ -10,6 +10,7 @@
 #define LOG_PORT 9023
 
 #define FAKE_FW_VERSION 0x07518021
+#define FAKE_DEX        0x0C100080
 
 struct filedesc {
 	void *useless1[3];
