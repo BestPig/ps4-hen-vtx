@@ -75,8 +75,9 @@ int install_payload(struct thread *td, struct install_payload_args* args)
 	// flatz allow sys_dynlib_dlsym in all processes 6.72
 	*(uint64_t*)(kernel_base + sys_dynlib_dlsym_patch) = 0x8B4890000001C7E9;
 
-	// spoof sdk_version - enable vr
+	// spoof sdk_version - enable vr and fake dex
 	*(uint32_t *)(kernel_base + sdk_version_patch) = FAKE_FW_VERSION;
+	*(uint32_t *)(kernel_base + fake_dex_patch) = FAKE_DEX;
 
 	// enable debug log
 	*(uint16_t*)(kernel_base + enable_debug_log_patch) = 0x38EB;
