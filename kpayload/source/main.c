@@ -25,7 +25,7 @@ void* (*memcpy)(void* dst, const void* src, size_t len) PAYLOAD_BSS;
 void* (*memset)(void *s, int c, size_t n) PAYLOAD_BSS;
 size_t (*strlen)(const char *str) PAYLOAD_BSS;
 int (*printf)(const char *fmt, ...) PAYLOAD_BSS;
-void (*eventhandler_register)(void *list, const char *name, void *func, void *arg, int priority) PAYLOAD_BSS;
+void (*eventhandler_register)(void *list, const char *name, void *func, void *key, void *arg, int priority) PAYLOAD_BSS;
 
 void* M_TEMP PAYLOAD_BSS;
 uint8_t* MINI_SYSCORE_SELF_BINARY PAYLOAD_BSS;
@@ -148,9 +148,14 @@ PAYLOAD_CODE void resolve_kdlsym()
 PAYLOAD_CODE int my_entrypoint()
 {
 	resolve_kdlsym();
+	// printf("Hello for kpayload\n");
+	// printf("Installing fself hooks\n");
 	install_fself_hooks();
+	// printf("Installing fpkg hooks\n");
 	install_fpkg_hooks();
+	// printf("Installing patches\n");
 	install_patches();
+	// printf("Installing fake signout patch\n");
 	return shellcore_fpkg_patch();
 }
 

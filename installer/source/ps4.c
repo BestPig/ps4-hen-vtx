@@ -33,7 +33,7 @@ void initKernel(void)
 	RESOLVE(libKernelHandle, __error);
 	RESOLVE(libKernelHandle, sceKernelLoadStartModule);
 }
-  
+
 void initLibc(void)
 {
 	int libcHandle = sceKernelLoadStartModule("libSceLibcInternal.sprx", 0, NULL, 0, 0, 0);

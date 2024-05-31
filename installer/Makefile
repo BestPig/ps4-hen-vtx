@@ -15,7 +15,7 @@ OBJS	:= $(patsubst $(SDIR)/%.c, $(ODIR)/%.o, $(CFILES)) $(patsubst $(SDIR)/%.s, 
 TARGET = $(shell basename $(CURDIR)).bin
 
 $(TARGET): $(ODIR) $(OBJS)
-	$(CC) $(LIBPS4)/crt0.s $(LIBPS4)/source/syscall.s $(ODIR)/*.o -o temp.t $(CFLAGS) $(LFLAGS)
+	$(CC) $(LIBPS4)/crt0.s $(LIBPS4)/source/syscall.s $(LIBPS4)/source/network.c $(ODIR)/*.o -o temp.t $(CFLAGS) $(LFLAGS)
 	$(OBJCOPY) -O binary temp.t $(TARGET)
 	rm -f temp.t
 

@@ -17,6 +17,7 @@ extern int (*fpu_kern_enter)(struct thread *td, struct fpu_kern_ctx *ctx, uint32
 extern int (*fpu_kern_leave)(struct thread *td, struct fpu_kern_ctx *ctx) PAYLOAD_BSS;
 extern void* (*memcpy)(void* dst, const void* src, size_t len) PAYLOAD_BSS;
 extern void* (*memset)(void *s, int c, size_t n) PAYLOAD_BSS;
+extern int (*printf)(const char *fmt, ...) PAYLOAD_BSS;
 
 extern struct sbl_map_list_entry** SBL_DRIVER_MAPPED_PAGES PAYLOAD_BSS;
 extern struct sx* SBL_PFS_SX PAYLOAD_BSS;
@@ -143,10 +144,12 @@ PAYLOAD_CODE static inline int npdrm_decrypt_debug_rif(unsigned int type, uint8_
 
 	fpu_kern_enter(td, FPU_CTX, 0);
 	{
-		// decrypt fake rif manually using a key from publishing tools 
+		// decrypt fake rif manually using a key from publishing tools
 		ret = AesCbcCfb128Decrypt(data + RIF_DIGEST_SIZE, data + RIF_DIGEST_SIZE, RIF_DATA_SIZE, rif_debug_key, sizeof(rif_debug_key) * 8, data);
-		if (ret)
+		if (ret) {
+			// printf("npdrm_decrypt_debug_rif: AesCbcCfb128Decrypt failed\n");
 			ret = SCE_SBL_ERROR_NPDRM_ENOTSUP;
+		}
 	}
 	fpu_kern_leave(td, FPU_CTX);
 
@@ -156,8 +159,10 @@ PAYLOAD_CODE static inline int npdrm_decrypt_debug_rif(unsigned int type, uint8_
 PAYLOAD_CODE static inline struct sbl_map_list_entry* sceSblDriverFindMappedPageListByGpuVa(vm_offset_t gpu_va)
 {
 	struct sbl_map_list_entry* entry;
-	if (!gpu_va)
+	if (!gpu_va) {
+		// printf("sceSblDriverFindMappedPageListByGpuVa: invalid gpu_va\n");
 		return NULL;
+	}
 
 	entry = *SBL_DRIVER_MAPPED_PAGES;
 	while (entry) {
@@ -165,14 +170,17 @@ PAYLOAD_CODE static inline struct sbl_map_list_entry* sceSblDriverFindMappedPage
 			return entry;
 		entry = entry->next;
 	}
+	// printf("sceSblDriverFindMappedPageListByGpuVa: failed to find entry\n");
 	return NULL;
 }
 
 PAYLOAD_CODE static inline vm_offset_t sceSblDriverGpuVaToCpuVa(vm_offset_t gpu_va, size_t* num_page_groups)
 {
 	struct sbl_map_list_entry* entry = sceSblDriverFindMappedPageListByGpuVa(gpu_va);
-	if (!entry)
+	if (!entry) {
+		// printf("sceSblDriverGpuVaToCpuVa: failed to find entry\n");
 		return 0;
+	}
 
 	if (num_page_groups)
 		*num_page_groups = entry->num_page_groups;
@@ -331,10 +339,10 @@ PAYLOAD_CODE int my_sceSblKeymgrSmCallfunc_npdrm_decrypt_isolated_rif(union keym
 	union keymgr_request* request = (union keymgr_request*)sceSblDriverGpuVaToCpuVa(payload->data, NULL);
 	int ret;
 
-	// try to decrypt rif normally 
+	// try to decrypt rif normally
 	ret = sceSblKeymgrSmCallfunc(payload);
 
-	// and if it fails then we check if it's fake rif and try to decrypt it by ourselves 
+	// and if it fails then we check if it's fake rif and try to decrypt it by ourselves
 	if ((ret != 0 || payload->status != 0) && request)
 	{
 		if (request->decrypt_rif.type == 0x200)
@@ -351,7 +359,7 @@ PAYLOAD_CODE int my_sceSblKeymgrSmCallfunc_npdrm_decrypt_rif_new(union keymgr_pa
 {
 	uint64_t buf_gpu_va = payload->data;
 
-	// it's SM request, thus we have the GPU address here, so we need to convert it to the CPU address 
+	// it's SM request, thus we have the GPU address here, so we need to convert it to the CPU address
 	union keymgr_request* request = (union keymgr_request*)sceSblDriverGpuVaToCpuVa(buf_gpu_va, NULL);
 	union keymgr_response* response = (union keymgr_response*)request;
 	int orig_ret, ret;

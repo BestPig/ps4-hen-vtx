@@ -2,7 +2,12 @@
 #define __DEBUG_H__
 #pragma once
 
-int sock;
+#include "libc.h"
+#include "network.h"
+#include "syscall.h"
+#include "types.h"
+
+int debug_sock;
 
 void initDebugSocket(void);
 void closeDebugSocket(void);
@@ -12,8 +17,9 @@ void closeDebugSocket(void);
 do {																					\
 	char __printfsocket_buffer[512];													\
 	int __printfsocket_size = sprintf(__printfsocket_buffer, format, ##__VA_ARGS__);	\
-	sceNetSend(sock, __printfsocket_buffer, __printfsocket_size, 0);					\
+	SckSend(debug_sock, __printfsocket_buffer, __printfsocket_size);					\
 } while(0)
+
 #else
 #define printfsocket(format, ...) (void)0
 #endif

@@ -55,7 +55,7 @@ struct qm_trace {
 	int prevline;
 };
 
-size_t countof(uint8_t array);  
+size_t countof(uint8_t array);
 
 static inline struct thread* curthread(void) {
 	struct thread* td;
@@ -150,7 +150,7 @@ TYPE_BEGIN(struct proc, 0x800); // XXX: random, don't use directly without fixin
 	TYPE_FIELD(struct filedesc *p_fd, 0x48);
 	TYPE_FIELD(int pid, 0xB0);
 	TYPE_FIELD(struct vmspace *p_vmspace, 0x168);
-	TYPE_FIELD(char p_comm[32], 0x44C); // 5.05
+	TYPE_FIELD(char p_comm[32], 0x454); // 10.50
 TYPE_END();
 
 #endif
