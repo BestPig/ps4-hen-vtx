@@ -98,7 +98,7 @@ int install_payload(struct thread *td, struct payload_info* payload_info)
 	// printf("enable debug RIFs patch applied\n");
 
 	// flatz allow sys_dynlib_dlsym in all processes 5.05
-	*(uint64_t*)(kernel_base + sys_dynlib_dlsym_patch) = 0x8B48909090909090;
+	*(uint64_t*)(kernel_base + sys_dynlib_dlsym_patch) = 0x8b48900000013ae9;
 	// printf("allow sys_dynlib_dlsym in all processes patch applied\n");
 
 	// spoof sdk_version - enable vr 5.05
