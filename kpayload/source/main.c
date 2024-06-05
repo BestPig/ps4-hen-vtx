@@ -148,14 +148,9 @@ PAYLOAD_CODE void resolve_kdlsym()
 PAYLOAD_CODE int my_entrypoint()
 {
 	resolve_kdlsym();
-	// printf("Hello for kpayload\n");
-	// printf("Installing fself hooks\n");
 	install_fself_hooks();
-	// printf("Installing fpkg hooks\n");
 	install_fpkg_hooks();
-	// printf("Installing patches\n");
 	install_patches();
-	// printf("Installing fake signout patch\n");
 	return shellcore_fpkg_patch();
 }
 

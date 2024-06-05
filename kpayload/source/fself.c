@@ -79,7 +79,6 @@ PAYLOAD_CODE static struct sbl_map_list_entry* sceSblDriverFindMappedPageListByG
 
 		entry = entry->next;
 	}
-	printf("sceSblDriverFindMappedPageListByGpuVa: failed to find entry\n");
 	return NULL;
 }
 
@@ -109,14 +108,11 @@ PAYLOAD_CODE static inline int sceSblAuthMgrGetSelfAuthInfoFake(struct self_cont
 
 		if (fake_info->size == sizeof(fake_info->info)) {
 			memcpy(info, &fake_info->info, sizeof(*info));
-			printf("sceSblAuthMgrGetSelfAuthInfoFake: OK\n");
 			return 0;
 		}
-		printf("sceSblAuthMgrGetSelfAuthInfoFake: failed get fake info\n");
 		return -37;
 	}
 	else {
-		printf("sceSblAuthMgrGetSelfAuthInfoFake: !SELF\n");
 		return -35;
 	}
 }
@@ -126,13 +122,10 @@ PAYLOAD_CODE static inline int is_fake_self(struct self_context* ctx)
 	struct self_ex_info* ex_info;
 	if (ctx && ctx->format == SELF_FORMAT_SELF) {
 		if (_sceSblAuthMgrGetSelfInfo(ctx, &ex_info)) {
-			printf("is_fake_self: failed to get self info\n");
 			return 0;
 		}
-		printf("is_fake_self: %d\n", ex_info->ptype == SELF_PTYPE_FAKE);
 		return ex_info->ptype == SELF_PTYPE_FAKE;
 	}
-	printf("is_fake_self: !SELF\n");
 	return 0;
 }
 
@@ -161,13 +154,10 @@ PAYLOAD_CODE static inline int sceSblAuthMgrGetElfHeader(struct self_context* ct
 			if (ehdr)
 				*ehdr = elf_hdr;
 
-			printf("sceSblAuthMgrGetElfHeader: OK\n");
 			return 0;
 		}
-		printf("sceSblAuthMgrGetElfHeader: no ELF header\n");
 		return -37;
 	}
-	printf("sceSblAuthMgrGetElfHeader: not a SELF or ELF\n");
 	return -35;
 }
 
@@ -180,31 +170,26 @@ PAYLOAD_CODE static inline int build_self_auth_info_fake(struct self_context* ct
 
 	if (!ctx || !parent_auth_info || !auth_info) {
 		result = EINVAL;
-		printf("build_self_auth_info_fake: invalid args\n");
 		goto error;
 	}
 
 	if (!is_fake_self(ctx)) {
 		result = EINVAL;
-		printf("build_self_auth_info_fake: not a fake SELF\n");
 		goto error;
 	}
 
 	result = _sceSblAuthMgrGetSelfInfo(ctx, &ex_info);
 	if (result) {
-		printf("build_self_auth_info_fake: KO get self info\n");
 		goto error;
 	}
 
 	result = sceSblAuthMgrGetElfHeader(ctx, &ehdr);
 	if (result) {
-		printf("1 - build_self_auth_info_fake: KO get ELF header\n");
 		goto error;
 	}
 
 	if (!ehdr) {
 		result = ESRCH;
-		printf("2 - build_self_auth_info_fake: KO to get ELF header\n");
 		goto error;
 	}
 
@@ -225,7 +210,6 @@ PAYLOAD_CODE static inline int build_self_auth_info_fake(struct self_context* ct
 
 		default:
 			result = ENOTSUP;
-			printf("build_self_auth_info_fake: unsupported ELF type\n");
 			goto error;
 
 		}
@@ -237,8 +221,6 @@ PAYLOAD_CODE static inline int build_self_auth_info_fake(struct self_context* ct
 
 	if (auth_info)
 		memcpy(auth_info, &fake_auth_info, sizeof(*auth_info));
-
-	printf("build_self_auth_info_fake: OK\n");
 
 error:
 	return result;
