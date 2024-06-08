@@ -13,7 +13,7 @@
 #define SBL_KEYMGR_KEY_RBTREE_addr      0x26606f8
 #define SBL_KEYMGR_BUF_VA_addr          0x2664000
 #define SBL_KEYMGR_BUF_GVA_addr         0x2664808
-#define FPU_CTX_addr                    0x2653280
+#define FPU_CTX_addr                    0x2660180
 #define DIPSW_addr                      0x221c5d0
 
 // common
@@ -37,10 +37,10 @@
 #define sceSblAuthMgrSmIsLoadable2_addr 0x642f90
 #define _sceSblAuthMgrGetSelfInfo_addr  0x6437d0
 #define _sceSblAuthMgrSmStart_addr      0x63e9c0
-#define sceSblAuthMgrVerifyHeader_addr  0x640740
+#define sceSblAuthMgrVerifyHeader_addr  0x642ff0
 
 // Fpkg
-#define RsaesPkcs1v15Dec2048CRT_addr    0x3c8060
+#define RsaesPkcs1v15Dec2048CRT_addr    0x133a10
 #define Sha256Hmac_addr                 0x2d1ca0
 #define AesCbcCfb128Encrypt_addr        0x2deaa0
 #define AesCbcCfb128Decrypt_addr        0x2decd0

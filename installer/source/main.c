@@ -44,29 +44,6 @@ int install_payload(struct thread *td, struct payload_info* payload_info)
 		return -1;
 	}
 
-	cred->cr_uid = 0;
-	cred->cr_ruid = 0;
-	cred->cr_rgid = 0;
-	cred->cr_groups[0] = 0;
-
-	cred->cr_prison = *got_prison0;
-	fd->fd_rdir = fd->fd_jdir = *got_rootvnode;
-
-	// escalate ucred privs, needed for access to the filesystem ie* mounting & decrypting files
-	void *td_ucred = *(void **)(((char *)td) + 304); // p_ucred == td_ucred
-
-	// sceSblACMgrIsSystemUcred
-	uint64_t *sonyCred = (uint64_t *)(((char *)td_ucred) + 96);
-	*sonyCred = 0xffffffffffffffff;
-
-	// sceSblACMgrGetDeviceAccessType
-	uint64_t *sceProcType = (uint64_t *)(((char *)td_ucred) + 88);
-	*sceProcType = 0x3801000000000013; // Max access
-
-	// sceSblACMgrHasSceProcessCapability
-	uint64_t *sceProcCap = (uint64_t *)(((char *)td_ucred) + 104);
-	*sceProcCap = 0xffffffffffffffff; // Sce Process
-
 	// Disable write protection
 	uint64_t cr0 = readCr0();
 	writeCr0(cr0 & ~X86_CR0_WP);
