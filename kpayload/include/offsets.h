@@ -3,17 +3,17 @@
 #pragma once
 
 // data
-#define	XFAST_SYSCALL_addr              0x00001c0 // done
-#define M_TEMP_addr                     0x1a5fe30 // done
-#define MINI_SYSCORE_SELF_BINARY_addr   0x1541e78 // done
-#define ALLPROC_addr                    0x2269f30 // done
-#define SBL_DRIVER_MAPPED_PAGES_addr    0x2646ca8 // done
-#define SBL_PFS_SX_addr                 0x265c310 // done
-#define SBL_KEYMGR_KEY_SLOTS_addr       0x2660858 // done
-#define SBL_KEYMGR_KEY_RBTREE_addr      0x2660868 // done
-#define SBL_KEYMGR_BUF_VA_addr          0x2664000 // done
-#define SBL_KEYMGR_BUF_GVA_addr         0x2664808 // done
-#define FPU_CTX_addr                    0x2665280
+#define	XFAST_SYSCALL_addr              0x00001c0
+#define M_TEMP_addr                     0x1a5fe30
+#define MINI_SYSCORE_SELF_BINARY_addr   0x1541e78
+#define ALLPROC_addr                    0x2269f30
+#define SBL_DRIVER_MAPPED_PAGES_addr    0x2646ca8
+#define SBL_PFS_SX_addr                 0x265c310
+#define SBL_KEYMGR_KEY_SLOTS_addr       0x2660858
+#define SBL_KEYMGR_KEY_RBTREE_addr      0x2660868
+#define SBL_KEYMGR_BUF_VA_addr          0x2664000
+#define SBL_KEYMGR_BUF_GVA_addr         0x2664808
+#define FPU_CTX_addr                    0x26796c0
 #define DIPSW_addr                      0x1be45d0
 
 // common
@@ -37,7 +37,7 @@
 #define sceSblAuthMgrSmIsLoadable2_addr 0x643bf0
 #define _sceSblAuthMgrGetSelfInfo_addr  0x644430
 #define _sceSblAuthMgrSmStart_addr      0x63beb0
-#define sceSblAuthMgrVerifyHeader_addr  0x63dc30
+#define sceSblAuthMgrVerifyHeader_addr  0x643c50
 
 // Fpkg
 #define RsaesPkcs1v15Dec2048CRT_addr    0x350360
