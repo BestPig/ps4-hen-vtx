@@ -11,6 +11,7 @@
 #define PMAP_STORE_addr                 0x1b2cee0
 #define DT_HASH_SEGMENT_addr            0x0ce7008
 #define M_TEMP_addr                     0x1a5fe30
+#define SYSENT_addr                     0x11029c0
 
 // Functions
 #define pmap_protect_addr               0x046ef0
@@ -33,6 +34,9 @@
 // allow sys_dynlib_dlsym in all processes
 #define sys_dynlib_dlsym_patch1          0x213088
 #define sys_dynlib_dlsym_patch2          0x2dab60
+
+// disable some check for mmap
+#define vm_map_protect_check             0x47b2ec
 
 // sdk version spoof - enable all VR fws
 // #define sdk_version_patch               0xCE8332 // unsure

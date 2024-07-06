@@ -131,7 +131,7 @@ struct proc_vm_map_entry {
 	vm_offset_t end;
 	vm_offset_t offset;
 	uint16_t prot;
-};
+}  __attribute__((packed));
 
 TYPE_BEGIN(struct uio, 0x30);
 	TYPE_FIELD(uint64_t uio_iov, 0);
@@ -151,6 +151,39 @@ TYPE_BEGIN(struct proc, 0x800); // XXX: random, don't use directly without fixin
 	TYPE_FIELD(int pid, 0xB0);
 	TYPE_FIELD(struct vmspace *p_vmspace, 0x168);
 	TYPE_FIELD(char p_comm[32], 0x454); // 10.50
+	TYPE_FIELD(char titleid[16], 0x390);
+	TYPE_FIELD(char contentid[64], 0x3D4);
+	TYPE_FIELD(char path[64], 0x474);
 TYPE_END();
+
+struct auditinfo_addr {
+	uint8_t useless[184];
+};
+
+struct ucred {
+	uint32_t cr_ref;					// reference count		0x0000
+	uint32_t cr_uid;					// effective user id	0x0004
+	uint32_t cr_ruid;					// real user id			0x0008
+	uint32_t useless2;					// 						0x000C
+	uint32_t useless3;					//
+	uint32_t cr_rgid;					// real group id
+	uint32_t useless4;					//
+	void *useless5;						//
+	void *useless6;						//
+	void *cr_prison;					// jail(2)				0x0030
+	void *useless7;						//
+	uint32_t useless8;					//
+	void *useless9[2];					//
+	void *useless10;					//
+	struct auditinfo_addr cr_audit;		//
+	uint32_t *cr_groups;				// groups
+	uint32_t useless12;					//
+};
+
+struct filedesc {
+	void *useless1[3];
+	void *fd_rdir;
+	void *fd_jdir;
+};
 
 #endif

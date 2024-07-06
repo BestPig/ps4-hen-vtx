@@ -87,7 +87,6 @@ PAYLOAD_CODE static inline vm_offset_t sceSblDriverGpuVaToCpuVa(vm_offset_t gpu_
 	struct sbl_map_list_entry* entry = sceSblDriverFindMappedPageListByGpuVa(gpu_va);
 
 	if (!entry) {
-		printf("sceSblDriverGpuVaToCpuVa: failed to find entry\n");
 		return 0;
 	}
 
@@ -141,7 +140,6 @@ PAYLOAD_CODE static inline int sceSblAuthMgrGetElfHeader(struct self_context* ct
 		if (ehdr)
 			*ehdr = elf_hdr;
 
-		printf("sceSblAuthMgrGetElfHeader: OK\n");
 		return 0;
 	}
 	else if (ctx->format == SELF_FORMAT_SELF)

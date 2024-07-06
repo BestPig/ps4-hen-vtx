@@ -13,34 +13,24 @@
 extern char kpayload[];
 extern unsigned kpayload_size;
 
-int install_payload(struct thread *td, struct payload_info* payload_info)
+int install_payload(struct thread *td, struct install_payload_args* args)
 {
-	struct ucred* cred;
-	struct filedesc* fd;
-
-	fd = td->td_proc->p_fd;
-	cred = td->td_proc->p_ucred;
-
 	uint8_t* kernel_base = (uint8_t*)(__readmsr(0xC0000082) - XFAST_SYSCALL_addr);
 
 	int (* printf)(const char * format, ...) = (void *)(kernel_base + printf_addr);
-	uint8_t* kernel_ptr = (uint8_t*)kernel_base;
 
 	printf("kernel base: %p\n", kernel_base);
-	void** got_prison0 = (void**)&kernel_ptr[PRISON0_addr];
-	void** got_rootvnode = (void**)&kernel_ptr[ROOTVNODE_addr];
 
 	void (*pmap_protect)(void * pmap, uint64_t sva, uint64_t eva, uint8_t pr) = (void *)(kernel_base + pmap_protect_addr);
 	// void* (*malloc)(unsigned long size, void* type, int flags) = (void *)(kernel_base + malloc_addr);
 	void *kernel_pmap_store = (void *)(kernel_base + PMAP_STORE_addr);
 
-	uint8_t* payload_data = payload_info->buffer;
-	size_t payload_size = payload_info->size;
+	uint8_t* payload_data = args->payload_info->buffer;
+	size_t payload_size = args->payload_info->size;
 	struct payload_header* payload_header = (struct payload_header*)payload_data;
 	uint8_t* payload_buffer = (uint8_t*)&kernel_base[DT_HASH_SEGMENT_addr];
 
 	if (!payload_data || payload_size < sizeof(payload_header) || payload_header->signature != 0x5041594C4F414458ull) {
-		printf("payload header signature not found\n");
 		return -1;
 	}
 
@@ -67,18 +57,9 @@ int install_payload(struct thread *td, struct payload_info* payload_info)
 	// flatz allow sys_dynlib_dlsym in all processes 5.05
 	*(uint64_t*)(kernel_base + sys_dynlib_dlsym_patch1) = 0x8b48900000013ae9;
 	*(uint64_t*)(kernel_base + sys_dynlib_dlsym_patch2) = 0x048b4865e5c3c031;
-	// printf("allow sys_dynlib_dlsym in all processes patch applied\n");
 
-	// spoof sdk_version - enable vr 5.05
-	// *(uint32_t *)(kernel_base + sdk_version_patch) = FAKE_FW_VERSION;
-	// *(uint32_t *)(kernel_base + fake_dex_patch) = FAKE_DEX;
-
-	// enable debug log
-	// *(uint16_t*)(kernel_base + enable_debug_log_patch) = 0x38EB;
-	// printf("enable debug log patch applied\n");
-
-	// enable uart output
-	// *(uint32_t *)(kernel_base + enable_uart_patch) = 0;
+	// patch vm_map_protect check
+	memcpy((void *)(kernel_base + vm_map_protect_check), "\x90\x90\x90\x90\x90\x90", 6);
 
 	// install kpayload
 	memset(payload_buffer, 0, ROUND_PG(kpayload_size));
@@ -86,7 +67,6 @@ int install_payload(struct thread *td, struct payload_info* payload_info)
 
 	uint64_t sss = ((uint64_t)payload_buffer) & ~(uint64_t)(PAGE_SIZE-1);
 	uint64_t eee = ((uint64_t)payload_buffer + payload_size + PAGE_SIZE - 1) & ~(uint64_t)(PAGE_SIZE-1);
-	printf("sss: %llx %llx\n", sss, eee);
 	kernel_base[pmap_protect_p_addr] = 0xEB;
 	pmap_protect(kernel_pmap_store, sss, eee, 7);
 	kernel_base[pmap_protect_p_addr] = 0x75;

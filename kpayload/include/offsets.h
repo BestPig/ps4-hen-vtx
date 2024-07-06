@@ -3,6 +3,8 @@
 #pragma once
 
 // data
+#define PRISON0_addr                    0x111b910
+#define ROOTVNODE_addr                  0x1bf81f0
 #define	XFAST_SYSCALL_addr              0x00001c0
 #define M_TEMP_addr                     0x1a5fe30
 #define MINI_SYSCORE_SELF_BINARY_addr   0x1541e78
@@ -15,6 +17,7 @@
 #define SBL_KEYMGR_BUF_GVA_addr         0x2664808
 #define FPU_CTX_addr                    0x26796c0
 #define DIPSW_addr                      0x1be45d0
+#define SYSENT_addr                     0x11029c0
 
 // common
 #define memcmp_addr                     0x02a020
@@ -80,12 +83,12 @@
 #define sceSblRcMgrIsStoreMode_patch                                0x01d320
 
 // SceShellUI patches - remote play patches
-// #define CreateUserForIDU_patch                                      0x1B11D6 // done
-// #define remote_play_menu_patch                                      0xEE638E // bypass
+#define CreateUserForIDU_patch                                      0x188cb0
+#define remote_play_menu_patch                                      0xec7b12
 
 // SceRemotePlay patches - remote play patches
-// #define SceRemotePlay_patch1                                        0x3C33F // bypass
-// #define SceRemotePlay_patch2                                        0x3C35A // bypass
+#define SceRemotePlay_patch1                                        0xec9f5
+#define SceRemotePlay_patch2                                        0xeca10
 
 // SceShellCore patches
 // call sceKernelIsGenuineCEX

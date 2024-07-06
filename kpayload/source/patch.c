@@ -40,9 +40,9 @@ PAYLOAD_CODE static struct proc *proc_find_by_name(const char *name)
 {
     struct proc *p;
 
-    if (!name)
+    if (!name) {
         return NULL;
-
+    }
 
 	p = *ALLPROC;
 
@@ -91,6 +91,7 @@ PAYLOAD_CODE static int proc_get_vm_map(struct proc *p, struct proc_vm_map_entry
         info[i].end = entry->end;
         info[i].offset = entry->offset;
         info[i].prot = entry->prot & (entry->prot >> 8);
+        printf("name: %s\n", entry->name);
         memcpy(info[i].name, entry->name, sizeof(info[i].name));
 
         if (!(entry = entry->next))
@@ -181,7 +182,6 @@ PAYLOAD_CODE int shellcore_fpkg_patch(void)
 
     if (!ssc) {
         ret = -1;
-        printf("SceShellCore not found\n");
         goto error;
     }
 
@@ -257,8 +257,6 @@ PAYLOAD_CODE int shellcore_fpkg_patch(void)
     //     goto error;
     // }
 
-    printf("Shellcore patches applied\n");
-
 error:
     if (entries)
         dealloc(entries);
@@ -286,7 +284,6 @@ PAYLOAD_CODE int shellui_patch(void)
 
     uint8_t mov__eax_1__ret[6] = { 0xB8, 0x01, 0x00, 0x00, 0x00, 0xC3 };
 
-    printf("ALLPROC: %p\n", ALLPROC);
     struct proc *ssui = proc_find_by_name("SceShellUI");
 
     if (!ssui) {
@@ -316,11 +313,10 @@ PAYLOAD_CODE int shellui_patch(void)
     }
 
     // disable CreateUserForIDU
-    // ret = proc_write_mem(ssui, (void *)(executable_base  + CreateUserForIDU_patch), 4, "\x48\x31\xC0\xC3", &n);
-    // if (ret) {
-    // 	printf("proc_write_mem failed for CreateUserForIDU\n");
-    //     goto error;
-    // }
+    ret = proc_write_mem(ssui, (void *)(executable_base  + CreateUserForIDU_patch), 4, "\x48\x31\xC0\xC3", &n);
+    if (ret) {
+        goto error;
+    }
 
     for (int i = 0; i < num_entries; i++) {
         if (!memcmp(entries[i].name, "app.exe.sprx", 12) && (entries[i].prot >= (PROT_READ | PROT_EXEC))) {
@@ -337,7 +333,7 @@ PAYLOAD_CODE int shellui_patch(void)
     }
 
     // enable remote play menu - credits to Aida
-    // ret = proc_write_mem(ssui, (void *)(app_base  + remote_play_menu_patch), 5, "\xE9\x82\x02\x00\x00", &n);
+    ret = proc_write_mem(ssui, (void *)(app_base  + remote_play_menu_patch), 5, "\xE9\x82\x02\x00\x00", &n);
 
     for (int i = 0; i < num_entries; i++) {
         if (!memcmp(entries[i].name, "libkernel_sys.sprx", 18) && (entries[i].prot >= (PROT_READ | PROT_EXEC))) {
@@ -404,15 +400,15 @@ PAYLOAD_CODE int remoteplay_patch() {
     }
 
     // patch SceRemotePlay process
-    // ret = proc_write_mem(srp, (void *)(executable_base + SceRemotePlay_patch1), 1, "\x01", &n);
-    // if (ret) {
-    //     goto error;
-    // }
+    ret = proc_write_mem(srp, (void *)(executable_base + SceRemotePlay_patch1), 1, "\x01", &n);
+    if (ret) {
+        goto error;
+    }
 
-    // ret = proc_write_mem(srp, (void *)(executable_base + SceRemotePlay_patch2), 2, "\xEB\x1E", &n);
-    // if (ret) {
-    //     goto error;
-    // }
+    ret = proc_write_mem(srp, (void *)(executable_base + SceRemotePlay_patch2), 2, "\xEB\x1E", &n);
+    if (ret) {
+        goto error;
+    }
 
     error:
     if (entries) {
