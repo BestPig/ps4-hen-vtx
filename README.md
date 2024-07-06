@@ -16,11 +16,12 @@
 - UART Enabler
 - Never Disable Screenshot
 - Remote Play Enabler
+- Implements some syscalls for Apollo compatibility (Taken from [ps4debug](https://github.com/kruniak/ps4debug))
 
 ## Contributors
 Massive credits to the following:
 - [qwertyoruiopz](https://twitter.com/qwertyoruiopz)
-- [Specter](https://twitter.com/SpecterDev) 
+- [Specter](https://twitter.com/SpecterDev)
 - [flat_z](https://twitter.com/flat_z)
 - [idc](https://twitter.com/3226_2143)
 - [Joonie](https://github.com/Joonie86/)
