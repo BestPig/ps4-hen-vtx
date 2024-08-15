@@ -38,6 +38,10 @@
 // disable some check for mmap
 #define vm_map_protect_check             0x47b2ec
 
+// patch sys_mmap to allow rwx mappings
+#define sys_mmap_1                       0x19c42a
+#define sys_mmap_2                       0x19c42d
+
 // sdk version spoof - enable all VR fws
 // #define sdk_version_patch               0xCE8332 // unsure
 

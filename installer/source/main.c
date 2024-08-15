@@ -61,6 +61,10 @@ int install_payload(struct thread *td, struct install_payload_args* args)
 	// patch vm_map_protect check
 	memcpy((void *)(kernel_base + vm_map_protect_check), "\x90\x90\x90\x90\x90\x90", 6);
 
+	// patch sys_mmap to allow rwx mappings
+	*(uint8_t *)(kernel_base + sys_mmap_1) = 0x37;
+	*(uint8_t *)(kernel_base + sys_mmap_2) = 0x37;
+
 	// install kpayload
 	memset(payload_buffer, 0, ROUND_PG(kpayload_size));
 	memcpy(payload_buffer, payload_data, payload_size);
